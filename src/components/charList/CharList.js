@@ -1,41 +1,84 @@
+import {Component} from 'react';
+import Spinner from '../spinner/Spinner';
+import ErrorMessage from '../errorMessage/ErrorMessage';
+import MarvelService from '../../services/MarvelService';
 import './charList.scss';
-import Spinner from "../spinner/Spinner";
-import ErrorMessage from "../errorMessage/ErrorMessage";
 
-const CharList = ({ chars, selectedChar, loading, error, onClickChar }) => {
+class CharList extends Component {
 
-    const spinner = loading ? <Spinner /> : null;
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const content = !loading && !error 
-        ? (
-            <>
-                <ul className="char__grid">
-                    {
-                        chars.map(char => {
-                            let className = `char__item${selectedChar && selectedChar.id === char.id ? ' char__item_selected' : ''}`;
-                            return (
-                                <li key={char.id} className={className} onClick={() => onClickChar(char.id)}>
-                                    <img src={char.thumbnail} alt="abyss"/>
-                                    <div className="char__name">{char.name}</div>
-                                </li>
-                            );
-                        })
-                    }
-                </ul>
+    state = {
+        charList: [],
+        loading: true,
+        error: false
+    };
+    
+    marvelService = new MarvelService();
+
+    componentDidMount() {
+        this.marvelService.getAllCharacters()
+            .then(this.onCharListLoaded)
+            .catch(this.onError)
+    }
+
+    onCharListLoaded = (charList) => {
+        this.setState({
+            charList,
+            loading: false
+        });
+    };
+
+    onError = () => {
+        this.setState({
+            error: true,
+            loading: false
+        });
+    };
+
+    renderItems(arr) {
+        const items =  arr.map((item) => {
+            let imgStyle = {objectFit: 'cover'};
+            if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+                imgStyle = {objectFit: 'unset'};
+            }
+            
+            return (
+                <li 
+                    className="char__item"
+                    key={item.id}>
+                        <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
+                        <div className="char__name">{item.name}</div>
+                </li>
+            );
+        });
+
+        return (
+            <ul className="char__grid">
+                {items}
+            </ul>
+        );
+    }
+
+    render() {
+
+        const {charList, loading, error} = this.state;
+        
+        const items = this.renderItems(charList);
+
+        const errorMessage = error ? <ErrorMessage/> : null;
+        const spinner = loading ? <Spinner/> : null;
+        const content = !(loading || error) ? items : null;
+
+        return (
+            <div className="char__list">
+                {errorMessage}
+                {spinner}
+                {content}
                 <button className="button button__main button__long">
                     <div className="inner">load more</div>
                 </button>
-            </>
+            </div>
         )
-        : null;
-
-    return (
-        <div className="char__list">
-            {spinner}
-            {errorMessage}
-            {content}            
-        </div>
-    )
+    }
 }
 
 export default CharList;
