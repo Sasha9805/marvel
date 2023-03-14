@@ -1,50 +1,39 @@
 import './charList.scss';
-import abyss from '../../resources/img/abyss.jpg';
+import Spinner from "../spinner/Spinner";
+import ErrorMessage from "../errorMessage/ErrorMessage";
 
-const CharList = () => {
+const CharList = ({ chars, selectedChar, loading, error, onClickChar }) => {
+
+    const spinner = loading ? <Spinner /> : null;
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const content = !loading && !error 
+        ? (
+            <>
+                <ul className="char__grid">
+                    {
+                        chars.map(char => {
+                            let className = `char__item${selectedChar && selectedChar.id === char.id ? ' char__item_selected' : ''}`;
+                            return (
+                                <li key={char.id} className={className} onClick={() => onClickChar(char.id)}>
+                                    <img src={char.thumbnail} alt="abyss"/>
+                                    <div className="char__name">{char.name}</div>
+                                </li>
+                            );
+                        })
+                    }
+                </ul>
+                <button className="button button__main button__long">
+                    <div className="inner">load more</div>
+                </button>
+            </>
+        )
+        : null;
+
     return (
         <div className="char__list">
-            <ul className="char__grid">
-                <li className="char__item">
-                    <img src={abyss} alt="abyss"/>
-                    <div className="char__name">Abyss</div>
-                </li>
-                <li className="char__item char__item_selected">
-                    <img src={abyss} alt="abyss"/>
-                    <div className="char__name">Abyss</div>
-                </li>
-                <li className="char__item">
-                    <img src={abyss} alt="abyss"/>
-                    <div className="char__name">Abyss</div>
-                </li>
-                <li className="char__item">
-                    <img src={abyss} alt="abyss"/>
-                    <div className="char__name">Abyss</div>
-                </li>
-                <li className="char__item">
-                    <img src={abyss} alt="abyss"/>
-                    <div className="char__name">Abyss</div>
-                </li>
-                <li className="char__item">
-                    <img src={abyss} alt="abyss"/>
-                    <div className="char__name">Abyss</div>
-                </li>
-                <li className="char__item">
-                    <img src={abyss} alt="abyss"/>
-                    <div className="char__name">Abyss</div>
-                </li>
-                <li className="char__item">
-                    <img src={abyss} alt="abyss"/>
-                    <div className="char__name">Abyss</div>
-                </li>
-                <li className="char__item">
-                    <img src={abyss} alt="abyss"/>
-                    <div className="char__name">Abyss</div>
-                </li>
-            </ul>
-            <button className="button button__main button__long">
-                <div className="inner">load more</div>
-            </button>
+            {spinner}
+            {errorMessage}
+            {content}            
         </div>
     )
 }
