@@ -1,7 +1,9 @@
 import {Component} from 'react';
+
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
+
 import './charList.scss';
 
 class CharList extends Component {
