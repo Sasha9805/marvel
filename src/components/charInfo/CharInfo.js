@@ -92,7 +92,7 @@ const View = ({ char }) => {
             <div className="char__basics">
                 <img src={thumbnail} alt={name} style={imgStyle} />
                 <div>
-                    <div className="char__info-name">thor</div>
+                    <div className="char__info-name">{name}</div>
                     <div className="char__btns">
                         <a href={homepage} className="button button__main">
                             <div className="inner">homepage</div>
