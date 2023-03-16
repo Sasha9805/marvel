@@ -1,4 +1,5 @@
 import { Component } from "react";
+import PropTypes from 'prop-types';
 
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -9,6 +10,11 @@ import './charInfo.scss';
 
 
 class CharInfo extends Component {
+
+    static propTypes = {
+        charId: PropTypes.number,
+    };
+
     state = {
         char: null,
         loading: false,
