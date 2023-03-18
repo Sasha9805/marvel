@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import Spinner from '../spinner/Spinner';
@@ -61,19 +61,66 @@ class CharList extends Component {
         });
     };
 
+    // Есть 2 решения: мое (cardRefs) и с урока (itemRefs)
+    itemRefs = [];
+
+    setRef = (ref) => {
+        this.itemRefs.push(ref);
+    };
+
+    focusOnItem = (ind) => {
+        this.itemRefs.forEach(item => item.classList.remove('char__item_selected'));
+        this.itemRefs[ind].classList.add('char__item_selected');
+        this.itemRefs[ind].focus();
+    };
+
+    onFocusLi = (ind) => {
+        this.cardRefs.forEach(item => {
+            // item.current.blur();
+            item.current.classList.remove('char__item_selected');
+        });
+        this.cardRefs[ind].current.focus();
+        this.cardRefs[ind].current.classList.add('char__item_selected');
+    };
+
     renderItems(arr) {
-        const items =  arr.map((item) => {
+        const isNewRefs = !Array.isArray(this.cardRefs) || this.cardRefs.length < arr.length;
+        if (isNewRefs) {
+            this.cardRefs = [];
+        }
+        
+        const items = arr.map((item, i) => {
             let imgStyle = {objectFit: 'cover'};
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
                 imgStyle = {objectFit: 'unset'};
             }
-            let className = `char__item${this.props.charId === item.id ? ' char__item_selected' : ''}`;
+            // let className = `char__item${this.props.charId === item.id ? ' char__item_selected' : ''}`;
+
+            if (isNewRefs) {
+                this.cardRefs.push(React.createRef());
+            }
             
             return (
                 <li
-                    className={className}
+                    // className={className}
+                    className="char__item"
+                    ref={this.cardRefs[i]}
+                    // ref={this.setRef}
                     key={item.id}
-                    onClick={() => this.props.onCharSelected(item.id)}>
+                    onClick={() => {
+                        this.props.onCharSelected(item.id);
+                        this.onFocusLi(i);
+                        // this.focusOnItem(i);
+                    }}
+                    onKeyPress={(e) => {
+                        if (e.key === ' ' || e.key === "Enter") {
+                            this.props.onCharSelected(item.id);
+                            this.onFocusLi(i);
+                            // this.focusOnItem(i);
+                        }
+                    }}
+                    tabIndex={0}
+                    >
                         <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
                         <div className="char__name">{item.name}</div>
                 </li>
