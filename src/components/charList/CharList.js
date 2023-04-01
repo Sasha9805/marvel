@@ -13,11 +13,17 @@ const CharList = (props) => {
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
+    const isFirstRender = useRef(true);
     
     const { loading, error, getAllCharacters } = useMarvelService();
 
     useEffect(() => {
-        onRequest(offset, true);
+        if (isFirstRender.current) {
+            onRequest(offset, true);
+        }
+        return () => {
+            isFirstRender.current = false;
+        };
     }, []);
 
     const onRequest = (offset, initial) => {
