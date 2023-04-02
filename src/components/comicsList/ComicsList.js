@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import useMarvelService from "../../services/MarvelService";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -12,11 +12,18 @@ const ComicsList = () => {
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(0);
     const [comicsEnded, setComicsEnded] = useState(false);
+    const isFirstRender = useRef(true);
 
     const { loading, error, getAllComics } = useMarvelService();
 
     useEffect(() => {
-        onRequest(offset, true);
+        if (isFirstRender.current) {
+            onRequest(offset, true);
+        }
+
+        return () => {
+            isFirstRender.current = false;
+        }
     }, []);
 
     const onRequest = (offset, initial) => {
