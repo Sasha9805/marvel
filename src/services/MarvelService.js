@@ -17,12 +17,12 @@ export default function useMarvelService() {
     };
 
     const getAllComics = async (offset = 0) => {
-        const res = await request(`${_apiBase}/comics?limit=8&offset=${offset}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}`);
+        const res = await request(`${_apiBase}comics?limit=8&offset=${offset}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}`);
         return res.data.results.map(_transformComic);
     };
 
     const getComic = async (id) => {
-        const res = await request(`${_apiBase}/comics/${id}?apikey=${process.env.REACT_APP_MARVEL_API_KEY}`);
+        const res = await request(`${_apiBase}comics/${id}?apikey=${process.env.REACT_APP_MARVEL_API_KEY}`);
         return _transformComic(res.data.results[0]);
     }
 
