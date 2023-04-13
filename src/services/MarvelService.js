@@ -6,8 +6,9 @@ export default function useMarvelService() {
     const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
     const _baseOffset = 210;
 
-    const getAllCharacters = async (offset = _baseOffset) => {
-        const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}`);
+    const getAllCharacters = async (offset = _baseOffset, name = '') => {
+        let nameString = name ? `&name=${name}` : '';
+        const res = await request(`${_apiBase}characters?limit=9&offset=${offset}${nameString}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}`);
         return res.data.results.map(_transformCharacter);
     };
 
