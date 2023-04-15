@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from "react-router-dom";
 
 import useMarvelService from "../../services/MarvelService";
@@ -6,6 +6,21 @@ import ErrorMessage from "../errorMessage/ErrorMessage";
 import Spinner from "../spinner/Spinner";
 
 import './comicsList.scss';
+
+const setContent = (process, items, newItemLoading) => {
+    switch (process) {
+        case 'waiting':
+            return <Spinner />;
+        case 'loading':
+            return newItemLoading ? items : <Spinner />;
+        case 'error':
+            return <ErrorMessage />;
+        case 'confirmed':
+            return items;
+        default:
+            throw new Error('Unexpected process state');
+    }
+};
 
 const ComicsList = () => {
 
@@ -15,7 +30,7 @@ const ComicsList = () => {
     const [comicsEnded, setComicsEnded] = useState(false);
     const isFirstRender = useRef(true);
 
-    const { loading, error, getAllComics } = useMarvelService();
+    const { getAllComics, process, setProcess } = useMarvelService();
 
     useEffect(() => {
         if (isFirstRender.current) {
@@ -31,6 +46,7 @@ const ComicsList = () => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true);
         getAllComics(offset)
             .then(onComicsListLoaded)
+            .then(() => setProcess('confirmed'))
             .catch(err => console.log(err));
     };
 
@@ -66,17 +82,13 @@ const ComicsList = () => {
         );
     }
 
-    const items = renderItems(comicsList);
-
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading && !newItemLoading ? <Spinner /> : null;
-    const content = !error ? items : null;
+    const elements = useMemo(() => {
+        return setContent(process, renderItems(comicsList), newItemLoading)
+    }, [process]);
 
     return (
         <div className="comics__list">
-            {errorMessage}
-            {spinner}
-            {content}
+            {elements}
             <button 
                 onClick={() => onRequest(offset)} 
                 className="button button__main button__long" 

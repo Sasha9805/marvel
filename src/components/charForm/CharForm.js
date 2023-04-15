@@ -12,7 +12,7 @@ const CharForm = () => {
 
     const [char, setChar] = useState(null);
 
-    const { error, clearError, getAllCharacters } = useMarvelService();
+    const { clearError, getAllCharacters, process, setProcess } = useMarvelService();
 
     const onCharLoaded = (char) => {
         setChar(char);
@@ -23,18 +23,19 @@ const CharForm = () => {
         try {
             const char = await getAllCharacters(0, charName);
             onCharLoaded(char);
+            setProcess('confirmed');
         } catch(err) {
             console.log(err);
         }
     };
 
-    const errorMessage = error ? <div className="char__form-critical-error"><CustomErrorMessage /></div> : null;;
+    const errorMessage = process === 'error' ? <div className="char__form-critical-error"><CustomErrorMessage /></div> : null;
 
-    const charNotFoundContent = Array.isArray(char) && !char.length && !error ? (
+    const charNotFoundContent = Array.isArray(char) && !char.length && process !== 'error' ? (
         <p className="char__form-message char__form-error">The character was not found. Check the name and try again</p>
     ) : null;
 
-    const charFoundContent = Array.isArray(char) && char.length && !error ? (
+    const charFoundContent = Array.isArray(char) && char.length && process !== 'error' ? (
         <div className="char__form-content char__form-message">
             <p className="char__form-field char__form-success">There is! Visit {char[0].name} page?</p>
             <Link to={`/chars/${char[0].id}`} className="button button__secondary">

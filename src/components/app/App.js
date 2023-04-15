@@ -26,12 +26,12 @@ const App = () =>  {
                                 <ComicsPage />
                             </Route>
                             <Route exact path="/comics/:id">
-                                <SinglePage renderComponent={data => <SingleComicView data={data} />} type="comic"/>
-                                {/* <SinglePage Component={SingleComicView} type='comic'/> */}
+                                {/* <SinglePage renderComponent={data => <SingleComicView data={data} />} type="comic"/> */}
+                                <SinglePage Component={SingleComicView} type='comic'/>
                             </Route>
                             <Route exact path="/chars/:id">
-                                <SinglePage renderComponent={data => <SingleCharView data={data} />} type="char"/>
-                                {/* <SinglePage Component={SingleCharView} type='char'/> */}
+                                {/* <SinglePage renderComponent={data => <SingleCharView data={data} />} type="char"/> */}
+                                <SinglePage Component={SingleCharView} type='char'/>
                             </Route>
                             <Route path="*">
                                 <Page404 />

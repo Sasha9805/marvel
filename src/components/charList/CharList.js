@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 
@@ -8,6 +8,21 @@ import useMarvelService from '../../services/MarvelService';
 
 import './charList.scss';
 
+const setContent = (process, items, newItemLoading) => {
+    switch (process) {
+        case 'waiting':
+            return <Spinner />;
+        case 'loading':
+            return newItemLoading ? items : <Spinner />;
+        case 'error':
+            return <ErrorMessage />;
+        case 'confirmed':
+            return items;
+        default:
+            throw new Error('Unexpected process state');
+    }
+};
+
 const CharList = (props) => {
 
     const [charList, setCharList] = useState([]);
@@ -16,7 +31,7 @@ const CharList = (props) => {
     const [charEnded, setCharEnded] = useState(false);
     const isFirstRender = useRef(true);
     
-    const { loading, error, getAllCharacters } = useMarvelService();
+    const { getAllCharacters, process, setProcess } = useMarvelService();
 
     useEffect(() => {
         if (isFirstRender.current) {
@@ -31,6 +46,7 @@ const CharList = (props) => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true);
         getAllCharacters(offset)
             .then(onCharListLoaded)
+            .then(() => setProcess('confirmed'))
             .catch(err => console.log(err));
     };
 
@@ -113,23 +129,25 @@ const CharList = (props) => {
 
         return (
             <ul className="char__grid">
-                <TransitionGroup component={null}>
+                <TransitionGroup 
+                    appear={true} 
+                    component={null}>
                     {items}
                 </TransitionGroup>
             </ul>
         );
     }
 
-    const items = renderItems(charList);
-
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading && !newItemLoading ? <Spinner/> : null;
+    const elements = useMemo(() => {
+        return setContent(process, renderItems(charList), newItemLoading)
+    }, [process]);
+    // const items = renderItems(charList);
 
     return (
         <div className="char__list">
-            {errorMessage}
-            {spinner}
-            {items}
+            {elements}
+            {/* {items} */}
+            {/* {setContent(process, items, newItemLoading)} */}
             <button 
                 className="button button__main button__long"
                 disabled={newItemLoading}
